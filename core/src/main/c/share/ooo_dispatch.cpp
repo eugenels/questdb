@@ -128,7 +128,10 @@ inline void set_var_refs(int64_t *addr, const int64_t offset, const int64_t coun
 
 // 19-23
 template<typename T, typename TVec>
-inline void set_memory_vanilla(T *addr, const T value, const int64_t count) {
+inline void set_memory_vanilla(T *addr, const T value, const int64_t count);
+
+template<typename T, typename TVec>
+void set_memory_vanilla(T *addr, const T value, const int64_t count) {
 
     const auto l_iteration = [addr, value](int64_t i) {
         addr[i] = value;

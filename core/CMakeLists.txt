@@ -16,6 +16,7 @@ set(
         src/main/c/share/vec_agg.cpp
         src/main/c/share/vec_ts_agg.cpp
         src/main/c/share/ooo_dispatch.cpp
+        src/main/c/share/vec_filter.cpp
 )
 
 set(
@@ -27,6 +28,7 @@ set(
         src/main/c/share/vec_int_key_agg.cpp
         src/main/c/share/vec_ts_agg.cpp
         src/main/c/share/ooo_dispatch.cpp
+        src/main/c/share/vec_filter.cpp
 )
 
 set(
@@ -37,10 +39,13 @@ set(
         src/main/c/share/net.h
         src/main/c/share/zip.c
         src/main/c/share/os.h
+        src/main/c/share/range.h
         src/main/c/share/vec_agg_vanilla.h
         src/main/c/share/util.cpp
         src/main/c/share/ooo.cpp
         src/main/c/share/txn_board.cpp
+        src/main/c/share/perf_counters.cpp
+        src/main/c/share/range.cpp
 )
 
 # JNI includes
@@ -227,7 +232,7 @@ else ()
     )
 
     ## Uncomment to measure time of ooo.cpp methods
-    ## add_compile_definitions(OOO_CPP_PROFILE_TIMING)
+    add_compile_definitions(OOO_CPP_PROFILE_TIMING)
 
     target_link_libraries(
             questdb

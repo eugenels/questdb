@@ -34,6 +34,8 @@ public final class Vect {
 
     public static native long binarySearch64Bit(long pData, long value, long low, long high, int scanDirection);
 
+    public static native long branchFreeSearch64Bit(long pData, long count, long value);
+
     public static native long binarySearchIndexT(long pData, long value, long low, long high, int scanDirection);
 
     public static long boundedBinarySearch64Bit(long pData, long value, long low, long high, int scanDirection) {
@@ -209,4 +211,23 @@ public final class Vect {
     public static native long sumLong(long pLong, long count);
 
     private static native void memcpy0(long src, long dst, long len);
+
+    public static native void GeoHashHit1(long haddr, long baddr, long size, int bits, long target);
+
+    public static native void GeoHashHitN(long haddr, long baddr, long size, int bits, long taddr, long targets_count);
+
+    public static native void GeoHashHitNStr(long haddr, long baddr, long size, int bits, String[] targets);
+    public static native void GeoHashHitNStr2(long haddr, long baddr, long size, int bits, String[] targets);
+
+    public static native void RangeSelect1(long xaddr, long yaddr, long baddr, long size,
+                double xmin, double xmax, double ymin, double ymax);
+
+    public static native void RangeSelect2(long xaddr, long yaddr, long baddr, long size,
+                double xmin, double xmax, double ymin, double ymax);
+
+    public static native void RangeSelect3(long xaddr, long yaddr, long baddr, long size,
+                double xmin, double xmax, double ymin, double ymax);
+
+    public static native void RangeSelect4(long xaddr, long yaddr, long baddr, long size,
+                double xmin, double xmax, double ymin, double ymax);
 }

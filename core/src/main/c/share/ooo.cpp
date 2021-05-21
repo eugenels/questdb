@@ -27,18 +27,8 @@
 #include "simd.h"
 #include "asmlib/asmlib.h"
 #include "ooo_dispatch.h"
-
-#ifdef OOO_CPP_PROFILE_TIMING
-#include <atomic>
-#include <time.h>
-#endif
-
-#ifdef __APPLE__
-#define __JLONG_REINTERPRET_CAST__(type, var)  (type)var
-#else
-#define __JLONG_REINTERPRET_CAST__(type, var)  reinterpret_cast<type>(var)
-#endif
-
+#include "perf_counters.h"
+#include <iostream>
 typedef struct {
     uint64_t c8[256];
     uint64_t c7[256];
@@ -368,29 +358,6 @@ void k_way_merge_long_index(
         MM_PREFETCH_NTA(winner);
         dest[merged_index_pos++] = winner->index[winner->pos];
     }
-}
-
-#ifdef OOO_CPP_PROFILE_TIMING
-const int perf_counter_length = 32;
-std::atomic_ulong perf_counters[perf_counter_length];
-
-uint64_t currentTimeNanos() {
-    struct timespec timespec;
-    clock_gettime(CLOCK_REALTIME, &timespec);
-    return timespec.tv_sec * 1000000000L + timespec.tv_nsec;
-}
-#endif
-
-template<typename T>
-inline void measure_time(int index, T func) {
-#ifdef OOO_CPP_PROFILE_TIMING
-    auto start = currentTimeNanos();
-    func();
-    auto end = currentTimeNanos();
-    perf_counters[index].fetch_add(end - start);
-#else
-    func();
-#endif
 }
 
 extern "C" {
@@ -723,7 +690,26 @@ Java_io_questdb_std_Vect_binarySearch64Bit(JNIEnv *env, jclass cl, jlong pData, 
 }
 
 JNIEXPORT jlong JNICALL
-Java_io_questdb_std_Vect_binarySearchIndexT(JNIEnv *env, jclass cl, jlong pData, jlong value, jlong low,
+        Java_io_questdb_std_Vect_branchFreeSearch64Bit(JNIEnv *env, jclass cl, jlong pData, jlong count, jlong value)  {
+    const int64_t * data = reinterpret_cast<const int64_t *>(pData);
+//    const int64_t begin = __JLONG_REINTERPRET_CAST__(int64_t, low);
+//    const int64_t end = __JLONG_REINTERPRET_CAST__(int64_t, high);
+//    const int64_t v = __JLONG_REINTERPRET_CAST__(int64_t, value);
+//    const int64_t count = begin - end;
+//    std::cout << "count: " << count << std::endl;
+    const int64_t v = __JLONG_REINTERPRET_CAST__(int64_t, value);
+    const int64_t rows = __JLONG_REINTERPRET_CAST__(int64_t, count);
+    int64_t index = 0;
+    measure_time(39, [&]() {
+        index = branch_free_search<int64_t>( data, rows, v);
+    });
+
+//    return branch_free_search<int64_t>( data + begin, count, v);
+    return index;
+}
+
+JNIEXPORT jlong JNICALL
+        Java_io_questdb_std_Vect_binarySearchIndexT(JNIEnv *env, jclass cl, jlong pData, jlong value, jlong low,
                                             jlong high, jint scan_dir) {
     return binary_search<index_t>(reinterpret_cast<index_t *>(pData), value, low, high, scan_dir);
 }
